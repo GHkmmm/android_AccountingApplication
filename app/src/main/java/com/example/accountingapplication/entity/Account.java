@@ -3,10 +3,19 @@ package com.example.accountingapplication.entity;
 import java.io.Serializable;
 
 public class Account implements Serializable {
+    private int id;
     private String sum;
     private String date;
     private String info;
     private String type;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getSum() {
         return sum;

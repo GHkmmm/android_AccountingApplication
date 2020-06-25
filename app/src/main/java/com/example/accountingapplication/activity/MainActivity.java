@@ -1,5 +1,6 @@
 package com.example.accountingapplication.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -12,11 +13,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.accountingapplication.R;
 import com.example.accountingapplication.adapter.HomeViewPagerAdapter;
+import com.example.accountingapplication.database.MyDBOperation;
 import com.example.accountingapplication.database.MySQLiteOpenHelp;
 import com.example.accountingapplication.entity.Account;
 import com.example.accountingapplication.fragment.AccountListFragment;
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> fragmentList;
     private HomeViewPagerAdapter homeViewPagerAdapter;
 
-    private List<Account> accountList;
+    public List<Account> accountList;
 
 //    private SQLiteDatabase db;
     private MyDBOperation dbOperation;
@@ -81,36 +85,12 @@ public class MainActivity extends AppCompatActivity {
         MySQLiteOpenHelp.mySQLiteOpenHelp = new MySQLiteOpenHelp(MainActivity.this);
         accountList = new ArrayList<>();
         dbOperation = new MyDBOperation();
-        dbOperation.readAccount();
+        accountList = dbOperation.readAccount();
         System.out.println("size====="+accountList.size());
     }
 
-    public class MyDBOperation {
-        //相当于请求操作数据库的权限
-        SQLiteDatabase db = MySQLiteOpenHelp.getReadDatabase();
-
-        public long insertAccount(Account account) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("sum", account.getSum());
-            contentValues.put("date", account.getDate());
-            contentValues.put("type",account.getType());
-            contentValues.put("info",account.getInfo());
-            return db.insert("accounts",null, contentValues);
-        }
-
-        public void readAccount(){
-            Cursor cursor = db.query("accounts",null,null,null,null,null,null);
-            while (cursor.moveToNext()){
-                Account dbAccount = new Account();
-                dbAccount.setSum(cursor.getString(cursor.getColumnIndex("sum")));
-                dbAccount.setDate(cursor.getString(cursor.getColumnIndex("date")));
-                dbAccount.setType(cursor.getString(cursor.getColumnIndex("type")));
-                dbAccount.setInfo(cursor.getString(cursor.getColumnIndex("info")));
-                accountList.add(0, dbAccount);
-            }
-        }
-    }
     public void setHomeViewPagerAdapter(){
+        System.out.println("size====="+accountList.size());
         accountListFragment = new AccountListFragment(accountList);
         staticsFragment = new StaticsFragment();
 
@@ -152,10 +132,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Account account = (Account) data.getExtras().getSerializable("account");
-        System.out.println(account.getSum());
-        long i = dbOperation.insertAccount(account);
-        accountList.add(0,account);
-        setHomeViewPagerAdapter();
+        Account account = new Account();
+        if (data!=null){
+            account = (Account) data.getExtras().getSerializable("account");
+            System.out.println(account.getSum());
+            long i = dbOperation.insertAccount(account);
+            accountList.add(0,account);
+            setHomeViewPagerAdapter();
+        }
     }
+
+//    private Handler uiHandler = new Handler(){
+//        @Override
+//        public void handleMessage(@NonNull Message msg) {
+//            switch (msg.what){
+//                case 1:
+//                    setHomeViewPagerAdapter();
+//                    break;
+//            }
+//        }
+//    };
 }

@@ -10,7 +10,7 @@ public class MySQLiteOpenHelp extends SQLiteOpenHelper {
     // 数据库版本号,在更新时系统便是根据version来判断，若version号低于则会启动升级程序
     private static final int version = 1;
     //设置你自己的数据库名称
-    public static final String DATABASE_NAME = "MyAccounting.db";
+    public static final String DATABASE_NAME = "Accounting.db";
     //这是在初始化之后有增、删、改、查之后的需要时，需要借组SQLiteDatabase来进行操作
 
     private static SQLiteDatabase dbForWrite;
@@ -29,18 +29,20 @@ public class MySQLiteOpenHelp extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String TABLEACCOUNTS = "create table accounts("+"id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+        String TABLEACCOUNTS = "create table accountList("+"id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 "sum TEXT,"+
                 "type TEXT,"+
                 "date TEXT,"+
-                "info TEXT"+
+                "info TEXT,"+
+                "state interger default 1"+
                 ");";
         db.execSQL(TABLEACCOUNTS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+//        String sql = "Alter table accounts add column state int default 1 ";
+//        db.execSQL(sql);
     }
 
     // 创建或打开一个数据库。这和getWritableDatabase()返回的对象是同一个，

@@ -54,6 +54,25 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             type = itemView.findViewById(R.id.type);
             date = itemView.findViewById(R.id.date);
             sum = itemView.findViewById(R.id.sum);
+
+            itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    if(onItemClickListener != null){
+                        onItemClickListener.onItemClick(v, accountList.get(getLayoutPosition()), getLayoutPosition());
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener{
+        public void onItemClick(View view, Account account, int position);
+    }
+
+    private OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
     }
 }
