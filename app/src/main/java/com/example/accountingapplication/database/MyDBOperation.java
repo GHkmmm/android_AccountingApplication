@@ -15,11 +15,13 @@ public class MyDBOperation {
     SQLiteDatabase db = MySQLiteOpenHelp.getReadDatabase();
 
     public long insertAccount(Account account) {
+        System.out.println("getCate====="+account.getCategory());
         ContentValues contentValues = new ContentValues();
         contentValues.put("sum", account.getSum());
         contentValues.put("date", account.getDate());
         contentValues.put("type",account.getType());
         contentValues.put("info",account.getInfo());
+        contentValues.put("category", account.getCategory());
         return db.insert("accountList",null, contentValues);
     }
 
@@ -34,6 +36,7 @@ public class MyDBOperation {
             dbAccount.setType(cursor.getString(cursor.getColumnIndex("type")));
             dbAccount.setInfo(cursor.getString(cursor.getColumnIndex("info")));
             dbAccount.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            dbAccount.setCategory(cursor.getString(cursor.getColumnIndex("category")));
             accountList.add(0, dbAccount);
         }
         return accountList;

@@ -8,4 +8,7 @@
     <color name="textSideColor">#40a598</color>
     <color name="textDarkColor">#181539</color>
     <color name="textBrightColor">#F2F2F2</color>
+    <color name="textBlack">#000</color>
+    <color name="textLightBlack">#999</color>
+    <color name="redColor">#dc4245</color>
 </resources>

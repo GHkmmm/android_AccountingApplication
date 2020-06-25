@@ -39,7 +39,7 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
     private String total;
     private Account account;
 
-    private TextView tvDate, totalNum;
+    private TextView expenses, income, tvDate, totalNum, type;
     private EditText info;
     private List<Button> buttonList;
     private Button one, two, three, four,five,six,seven,eight,nine,zero,delete,dot;
@@ -51,6 +51,8 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
         context = this;
         date = new StringBuffer();
         time = new StringBuffer();
+        account = new Account();
+        account.setCategory("支出");
 
         initView();
         initDateTime();
@@ -59,9 +61,13 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
 
     public void initView(){
         addAccountViewPager = findViewById(R.id.addAccountViewPager);
+        expenses = findViewById(R.id.expenses);
+        income = findViewById(R.id.income);
         tvDate = findViewById(R.id.tvDate);
         info = findViewById(R.id.info);
         totalNum = findViewById(R.id.totalNum);
+        type = findViewById(R.id.type);
+
         one = findViewById(R.id.one);
         two = findViewById(R.id.two);
         three = findViewById(R.id.three);
@@ -118,6 +124,20 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onPageSelected(int position) {
                 addAccountViewPager.setCurrentItem(position);
+                switch (position){
+                    case 0:
+                        expenses.setTextColor(getResources().getColor(R.color.textBlack));
+                        income.setTextColor(getResources().getColor(R.color.textLightBlack));
+                        account.setCategory(expenses.getText().toString());
+                        type.setText("交通");
+                        break;
+                    case 1:
+                        expenses.setTextColor(getResources().getColor(R.color.textLightBlack));
+                        income.setTextColor(getResources().getColor(R.color.textBlack));
+                        account.setCategory(income.getText().toString());
+                        type.setText("工资");
+                        break;
+                }
             }
 
             @Override
@@ -178,10 +198,9 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void addAccount(View view){
-        account = new Account();
         account.setSum(total);
-        account.setDate(date.toString());
-        account.setType("traffic");
+        account.setDate(tvDate.getText().toString());
+        account.setType(type.getText().toString());
         account.setInfo(info.getText().toString());
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
@@ -258,7 +277,7 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.zero:
-                if (total.length()!=1){
+                if (total!="0"){
                     total = total+"0";
                 }else {
                     total = "0";

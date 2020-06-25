@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_nav_menu_news"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="Desgin By GHkmmm"/>
+        ​
+        <item
+            android:id="@+id/item_nav_menu_star"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="GitHub：GHkmmm"/>
+        ​
+        <item
+            android:id="@+id/item_nav_menu_share"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="赞助作者"/>
+        ​
+        <item
+            android:id="@+id/item_nav_menu_set"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="作者信息"/>
+    </group>
+</menu>

@@ -3,6 +3,7 @@ package com.example.accountingapplication.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
@@ -15,8 +16,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.accountingapplication.R;
 import com.example.accountingapplication.adapter.HomeViewPagerAdapter;
@@ -26,13 +30,18 @@ import com.example.accountingapplication.entity.Account;
 import com.example.accountingapplication.fragment.AccountListFragment;
 import com.example.accountingapplication.fragment.StaticsFragment;
 import com.example.accountingapplication.utils.MyApplication;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ViewPager homeViewPager;
-    ImageView accountImg, staticsImg, addAccount;
+    private ImageView menu,accountImg, staticsImg, addAccount;
+    private TextView totalSum;
+    private LinearLayout totalLinearLayout, pagerTop;
+    private DrawerLayout dlNav;
+    private NavigationView navView;
 
     private AccountListFragment accountListFragment;
     private StaticsFragment staticsFragment;
@@ -54,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
         initView();
         initData();
         setHomeViewPagerAdapter();
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlNav.openDrawer(Gravity.LEFT);
+            }
+        });
         addAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +93,12 @@ public class MainActivity extends AppCompatActivity {
         accountImg = findViewById(R.id.account);
         staticsImg = findViewById(R.id.statics);
         addAccount = findViewById(R.id.addAccount);
-
+        totalSum = findViewById(R.id.totalSum);
+        totalLinearLayout = findViewById(R.id.totalLinearLayout);
+        pagerTop = findViewById(R.id.pagerTop);
+        menu = findViewById(R.id.menu);
+        dlNav = findViewById(R.id.dlNav);
+        navView = findViewById(R.id.navView);
     }
 
     public void initData(){
@@ -86,7 +106,32 @@ public class MainActivity extends AppCompatActivity {
         accountList = new ArrayList<>();
         dbOperation = new MyDBOperation();
         accountList = dbOperation.readAccount();
-        System.out.println("size====="+accountList.size());
+        setTotalSum();
+//        System.out.println("totalSum======="+calcTotalSum());
+    }
+
+    public int calcTotalSum(){
+        int sum = 0;
+        String category = "收入";
+        for (int i=0;i<accountList.size();i++){
+            if(category.equals(accountList.get(i).getCategory())){
+                sum = Integer.parseInt(accountList.get(i).getSum())+sum;
+            }else {
+                sum = sum-Integer.parseInt(accountList.get(i).getSum());
+            }
+            System.out.println("sum======="+sum);
+        }
+        return sum;
+    }
+    public void setTotalSum(){
+        totalSum.setText(calcTotalSum()+"");
+        if (calcTotalSum()>0){
+            totalLinearLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            pagerTop.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }else {
+            totalLinearLayout.setBackgroundColor(getResources().getColor(R.color.redColor));
+            pagerTop.setBackgroundColor(getResources().getColor(R.color.redColor));
+        }
     }
 
     public void setHomeViewPagerAdapter(){
@@ -138,18 +183,9 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(account.getSum());
             long i = dbOperation.insertAccount(account);
             accountList.add(0,account);
+            setTotalSum();
             setHomeViewPagerAdapter();
         }
     }
 
-//    private Handler uiHandler = new Handler(){
-//        @Override
-//        public void handleMessage(@NonNull Message msg) {
-//            switch (msg.what){
-//                case 1:
-//                    setHomeViewPagerAdapter();
-//                    break;
-//            }
-//        }
-//    };
 }

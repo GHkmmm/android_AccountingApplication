@@ -8,6 +8,7 @@ public class Account implements Serializable {
     private String date;
     private String info;
     private String type;
+    private String category;
 
     public int getId() {
         return id;
@@ -47,5 +48,13 @@ public class Account implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
