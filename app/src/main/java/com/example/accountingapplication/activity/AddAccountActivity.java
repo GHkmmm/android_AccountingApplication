@@ -3,14 +3,19 @@ package com.example.accountingapplication.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -44,9 +49,14 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
     private List<Button> buttonList;
     private Button one, two, three, four,five,six,seven,eight,nine,zero,delete,dot;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        Transition slide = TransitionInflater.from(this).inflateTransition(R.transition.slide);
+        getWindow().setEnterTransition(slide);
+        getWindow().setReenterTransition(slide);
         setContentView(R.layout.add_account);
         context = this;
         date = new StringBuffer();
@@ -160,7 +170,7 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
                 if (date.length() > 0) { //清除上次记录的日期
                     date.delete(0, date.length());
                 }
-                tvDate.setText(date.append(String.valueOf(year)).append("-").append(String.valueOf(month)).append("-").append(day));
+                tvDate.setText(date.append(year).append("-").append(month).append("-").append(day));
                 dialog.dismiss();
             }
         });
@@ -183,7 +193,7 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
     private void initDateTime() {
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
-        month = calendar.get(Calendar.MONTH) + 1;
+        month = calendar.get(Calendar.MONTH)+1;
         day = calendar.get(Calendar.DAY_OF_MONTH);
         hour = calendar.get(Calendar.HOUR);
         minute = calendar.get(Calendar.MINUTE);
@@ -193,7 +203,7 @@ public class AddAccountActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         this.year = year;
-        this.month = monthOfYear;
+        this.month = monthOfYear+1;
         this.day = dayOfMonth;
     }
 

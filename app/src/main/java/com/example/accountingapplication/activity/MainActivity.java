@@ -2,17 +2,20 @@ package com.example.accountingapplication.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.ActivityOptions;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +36,8 @@ import com.example.accountingapplication.utils.MyApplication;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -70,10 +75,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addAccount.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddAccountActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 1, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
             }
         });
     }
@@ -107,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
         dbOperation = new MyDBOperation();
         accountList = dbOperation.readAccount();
         setTotalSum();
-//        System.out.println("totalSum======="+calcTotalSum());
     }
 
     public int calcTotalSum(){
@@ -119,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
             }else {
                 sum = sum-Integer.parseInt(accountList.get(i).getSum());
             }
-            System.out.println("sum======="+sum);
         }
         return sum;
     }
@@ -135,9 +139,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setHomeViewPagerAdapter(){
-        System.out.println("size====="+accountList.size());
         accountListFragment = new AccountListFragment(accountList);
-        staticsFragment = new StaticsFragment();
+        staticsFragment = new StaticsFragment(accountList);
 
         fragmentList = new ArrayList<>();
         fragmentList.add(accountListFragment);

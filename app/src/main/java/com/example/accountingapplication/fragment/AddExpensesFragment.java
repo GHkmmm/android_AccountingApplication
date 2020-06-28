@@ -138,9 +138,9 @@ public class AddExpensesFragment extends Fragment implements View.OnClickListene
                 currentImage = electricbill;
                 break;
             case R.id.other:
-                other.setImageResource(R.drawable.other);
+                other.setImageResource(R.drawable.other_actived);
                 currentImage.setImageResource(image[currentIndex]);
-                type.setText("其他");
+                type.setText("other_actived");
                 currentIndex = 9;
                 currentImage = other;
                 break;

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">AccountingApplication</string>
+
+    <string-array name="type">
+        <item>交通</item>
+        <item>餐饮</item>
+        <item>衣服</item>
+        <item>房子</item>
+        <item>购物</item>
+        <item>还款</item>
+        <item>借钱</item>
+        <item>话费</item>
+        <item>电费</item>
+        <item>其他</item>
+    </string-array>
+
 </resources>

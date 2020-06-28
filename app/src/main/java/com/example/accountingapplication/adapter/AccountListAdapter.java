@@ -19,7 +19,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private String category = "收入";
 
     public AccountListAdapter(List<Account> accountList) {
-        System.out.println(accountList.size());
         this.accountList = accountList;
     }
 
@@ -82,5 +81,10 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void remove(int position){
+        accountList.remove(position);
+        notifyItemRemoved(position);
     }
 }

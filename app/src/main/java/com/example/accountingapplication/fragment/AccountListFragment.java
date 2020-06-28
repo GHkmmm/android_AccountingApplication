@@ -1,11 +1,14 @@
 package com.example.accountingapplication.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,16 +19,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.accountingapplication.R;
+import com.example.accountingapplication.activity.AccountDetailActivity;
 import com.example.accountingapplication.adapter.AccountListAdapter;
 import com.example.accountingapplication.database.MyDBOperation;
 import com.example.accountingapplication.entity.Account;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AccountListFragment extends Fragment {
     private List<Account> accounts;
+    private List<Account> accounts2;
     private RecyclerView accountList;
+    private AccountListAdapter accountListAdapter;
     private MyDBOperation dbOperation;
+    private Switch timeSwitch;
 
     public AccountListFragment(List<Account> accounts) {
         this.accounts = accounts;
@@ -36,6 +45,7 @@ public class AccountListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account, container, false);
         accountList = view.findViewById(R.id.accountList);
+        timeSwitch = view.findViewById(R.id.timeSwitch);
         initData();
         initRv();
         return view;
@@ -45,7 +55,7 @@ public class AccountListFragment extends Fragment {
     }
 
     private void initRv(){
-        AccountListAdapter accountListAdapter = new AccountListAdapter(accounts);
+        accountListAdapter = new AccountListAdapter(accounts);
         accountList.setLayoutManager(new LinearLayoutManager(getActivity()));
         accountList.setAdapter(accountListAdapter);
         accountListAdapter.setOnItemClickListener(new AccountListAdapter.OnItemClickListener() {
@@ -57,7 +67,11 @@ public class AccountListFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case 0:
-                                dialog.dismiss();
+                                Intent intent = new Intent(getActivity(), AccountDetailActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("account", account);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
                                 break;
                             case 1:
                                 deleteAccount(account, position);
@@ -73,12 +87,31 @@ public class AccountListFragment extends Fragment {
                 dialog.show();
             }
         });
+
+        timeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    accounts2 = new ArrayList<>();
+                    for (Account account:accounts){
+                        accounts2.add(account);
+                    }
+                    Collections.sort(accounts);
+                } else {
+                    accounts = new ArrayList<>();
+                    for (Account account:accounts2){
+                        accounts.add(account);
+                    }
+                }
+                initRv();
+            }
+        });
     }
 
     public void deleteAccount(Account account, int position){
         dbOperation.deleteAccount(account);
         accounts.remove(position);
-        initRv();
+        accountListAdapter.notifyItemRemoved(position);
         Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
     }
 }

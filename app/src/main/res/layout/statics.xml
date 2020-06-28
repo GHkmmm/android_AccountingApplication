@@ -8,48 +8,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="最近七天"
+        android:text="数据统计"
         android:paddingTop="40dp"
         android:textSize="30dp"/>
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        android:layout_marginTop="100dp">-->
 
-<!--        <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textColor="@color/textSideColor"-->
-<!--            android:text="PERFECT!"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textSize="24dp"-->
-<!--            android:gravity="center"/>-->
-<!--        <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textColor="@color/textBlack"-->
-<!--            android:textSize="24dp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:text="Success Surplus"-->
-<!--            android:gravity="center"/>-->
-<!--        <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="30%"-->
-<!--            android:textColor="@color/textLightBlack"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textSize="90dp"-->
-<!--            android:gravity="center"/>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp">
 
-<!--    </LinearLayout>-->
+        <TextView
+            android:id="@+id/today"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="今天"
+            android:background="#eee"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:id="@+id/lastweek"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="过去七天"
+            android:background="#eee"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:id="@+id/lastmonth"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="过去一个月"
+            android:background="#eee"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="10dp">
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/chart"

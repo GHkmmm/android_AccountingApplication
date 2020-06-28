@@ -29,6 +29,12 @@
 
         </LinearLayout>
 
+        <Switch
+            android:id="@+id/timeSwitch"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="按时间顺序排序"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/accountList"
             android:layout_width="match_parent"
