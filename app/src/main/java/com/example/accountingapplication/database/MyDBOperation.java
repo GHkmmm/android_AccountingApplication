@@ -49,4 +49,14 @@ public class MyDBOperation {
         contentValues.put("state", "0");
         db.update("accountList", contentValues, "id=?", new String[]{id+""});
     }
+
+    public void updateAccount(Account account){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("sum", account.getSum());
+        contentValues.put("date", account.getDate());
+        contentValues.put("type",account.getType());
+        contentValues.put("info",account.getInfo());
+
+        db.update("accountList", contentValues, "id=?", new String[]{account.getId()+""});
+    }
 }

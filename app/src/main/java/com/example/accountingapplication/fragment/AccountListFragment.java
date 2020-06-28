@@ -69,9 +69,10 @@ public class AccountListFragment extends Fragment {
                             case 0:
                                 Intent intent = new Intent(getActivity(), AccountDetailActivity.class);
                                 Bundle bundle = new Bundle();
+                                bundle.putInt("position", position);
                                 bundle.putSerializable("account", account);
                                 intent.putExtras(bundle);
-                                startActivity(intent);
+                                startActivityForResult(intent, 2);
                                 break;
                             case 1:
                                 deleteAccount(account, position);

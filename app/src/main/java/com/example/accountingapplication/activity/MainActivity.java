@@ -181,11 +181,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Account account = new Account();
-        if (data!=null){
+        System.out.println("requestCode===="+requestCode);
+        if (requestCode==1 && data!=null){
             account = (Account) data.getExtras().getSerializable("account");
-            System.out.println(account.getSum());
+            account.setId(accountList.get(0).getId()+1);
             long i = dbOperation.insertAccount(account);
             accountList.add(0,account);
+            setTotalSum();
+            setHomeViewPagerAdapter();
+        }else if (data!=null){
+            account = (Account) data.getExtras().getSerializable("account");
+            int i = data.getExtras().getInt("position");
+            dbOperation.updateAccount(account);
+            accountList.get(i).setInfo(account.getInfo());
+            accountList.get(i).setType(account.getType());
+            accountList.get(i).setDate(account.getDate());
+            accountList.get(i).setSum(account.getSum());
             setTotalSum();
             setHomeViewPagerAdapter();
         }

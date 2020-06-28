@@ -27,7 +27,6 @@
             android:gravity="center"
             android:layout_weight="1"
             android:text="今天"
-            android:background="#eee"
             android:layout_margin="10dp"/>
 
         <TextView
@@ -47,7 +46,6 @@
             android:gravity="center"
             android:layout_weight="1"
             android:text="过去一个月"
-            android:background="#eee"
             android:layout_margin="10dp"/>
     </LinearLayout>
 

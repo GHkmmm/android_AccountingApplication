@@ -11,12 +11,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.accountingapplication.R;
+import com.example.accountingapplication.database.MyDBOperation;
+import com.example.accountingapplication.database.MySQLiteOpenHelp;
 import com.example.accountingapplication.entity.Account;
 
 public class AccountDetailActivity extends AppCompatActivity {
     private Account account;
+    private int position;
     private EditText sum, date, info;
     private Spinner type;
+    private MyDBOperation dbOperation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class AccountDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         account = (Account) bundle.getSerializable("account");
+        position = bundle.getInt("position");
 
         sum.setText(account.getSum());
         date.setText(account.getDate());
@@ -45,7 +50,17 @@ public class AccountDetailActivity extends AppCompatActivity {
     }
 
     public void editAccount(View view){
-        
+        account.setSum(sum.getText()+"");
+        account.setType(type.getSelectedItem()+"");
+        account.setDate(date.getText()+"");
+        account.setInfo(info.getText()+"");
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("account",account);
+        bundle.putInt("position", position);
+        intent.putExtras(bundle);
+        AccountDetailActivity.this.setResult(RESULT_OK, intent);
+        AccountDetailActivity.this.finish();
     }
 
     public static void setSpinnerItemSelectedByValue(Spinner spinner,String value){

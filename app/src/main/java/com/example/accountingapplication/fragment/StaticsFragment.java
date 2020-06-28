@@ -61,6 +61,9 @@ public class StaticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 range = curTime - 86400000;
+                Today.setBackgroundColor(Color.parseColor("#eeeeee"));
+                LastWeek.setBackgroundColor(Color.parseColor("#ffffff"));
+                LastMonth.setBackgroundColor(Color.parseColor("#ffffff"));
                 initEntries();
                 initPieChart();
             }
@@ -68,7 +71,10 @@ public class StaticsFragment extends Fragment {
         LastWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                range = curTime-86400000*7;
+                range = curTime-(86400000d*7d);
+                LastWeek.setBackgroundColor(Color.parseColor("#eeeeee"));
+                Today.setBackgroundColor(Color.parseColor("#ffffff"));
+                LastMonth.setBackgroundColor(Color.parseColor("#ffffff"));
                 initEntries();
                 initPieChart();
             }
@@ -77,6 +83,9 @@ public class StaticsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 range = curTime-(86400000d*30d);
+                LastMonth.setBackgroundColor(Color.parseColor("#eeeeee"));
+                LastWeek.setBackgroundColor(Color.parseColor("#ffffff"));
+                Today.setBackgroundColor(Color.parseColor("#ffffff"));
                 initEntries();
                 initPieChart();
             }
@@ -93,7 +102,7 @@ public class StaticsFragment extends Fragment {
 
     public void initData(){
         curTime = Calendar.getInstance().getTimeInMillis();
-        range = curTime-(86400000d);
+        range = curTime-(86400000d*7d);
 
         initEntries();
     }
@@ -132,21 +141,16 @@ public class StaticsFragment extends Fragment {
         }
         entries.clear();//清除数据
         //添加数据
-        if (trafficVal!=0){
             entries.add(new PieEntry(trafficVal, "交通"));
-        }
-        if (eatVal!=0){
+
             entries.add(new PieEntry(eatVal, "餐饮"));
-        }
-        if (clothesVal!=0){
+
             entries.add(new PieEntry(clothesVal, "衣服"));
-        }
-        if (clothesVal!=0){
+
             entries.add(new PieEntry(shoppingVal, "购物"));
-        }
-        if (clothesVal!=0){
+
             entries.add(new PieEntry(otherVal, "其他"));
-        }
+
     }
 
     public void initPieChart(){
