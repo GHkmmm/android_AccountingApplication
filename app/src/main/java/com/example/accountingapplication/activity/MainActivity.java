@@ -21,15 +21,20 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.accountingapplication.R;
 import com.example.accountingapplication.adapter.HomeViewPagerAdapter;
 import com.example.accountingapplication.database.MyDBOperation;
 import com.example.accountingapplication.database.MySQLiteOpenHelp;
+import com.example.accountingapplication.database.UserDB;
+import com.example.accountingapplication.database.UserDBOperation;
 import com.example.accountingapplication.entity.Account;
+import com.example.accountingapplication.entity.User;
 import com.example.accountingapplication.fragment.AccountListFragment;
 import com.example.accountingapplication.fragment.StaticsFragment;
 import com.example.accountingapplication.utils.MyApplication;
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout totalLinearLayout, pagerTop;
     private DrawerLayout dlNav;
     private NavigationView navView;
+    private Switch isLockedSwitch;
 
     private AccountListFragment accountListFragment;
     private StaticsFragment staticsFragment;
@@ -55,15 +61,19 @@ public class MainActivity extends AppCompatActivity {
 
     public List<Account> accountList;
 
-//    private SQLiteDatabase db;
+    private MyApplication myApplication;
+
     private MyDBOperation dbOperation;
 
-    private MyApplication myApplication;
+    private UserDBOperation udb;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        udb.insertUser(user);
 
         initView();
         initData();
@@ -82,14 +92,27 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
             }
         });
+        isLockedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    user.setIsLocked(1);
+                    udb.updateUser(user);
+                }else {
+                    user.setIsLocked(0);
+                    System.out.println("updateUser======="+user.getId());
+                    udb.updateUser(user);
+                }
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        myApplication = (MyApplication) getApplication();
-        if (myApplication.isLocked){
+        if (myApplication.isLocked==1){
             Intent intent = new Intent(MainActivity.this, PasswordActivity.class);
+            intent.putExtra("password", user.getPassword());
             startActivity(intent);
         }
     }
@@ -105,13 +128,27 @@ public class MainActivity extends AppCompatActivity {
         menu = findViewById(R.id.menu);
         dlNav = findViewById(R.id.dlNav);
         navView = findViewById(R.id.navView);
+        isLockedSwitch = navView.getHeaderView(0).findViewById(R.id.isLocked);
     }
 
     public void initData(){
         MySQLiteOpenHelp.mySQLiteOpenHelp = new MySQLiteOpenHelp(MainActivity.this);
+        UserDB.mySQLiteOpenHelp = new UserDB(MainActivity.this);
         accountList = new ArrayList<>();
         dbOperation = new MyDBOperation();
+        udb = new UserDBOperation();
+        user = new User();
         accountList = dbOperation.readAccount();
+        user = udb.readUser();
+
+        myApplication = (MyApplication) getApplication();
+        myApplication.isLocked = user.getIsLocked();
+        if (myApplication.isLocked==0){
+            isLockedSwitch.setChecked(false);
+        }else {
+            isLockedSwitch.setChecked(true);
+        }
+
         setTotalSum();
     }
 

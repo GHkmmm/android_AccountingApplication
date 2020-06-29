@@ -42,6 +42,25 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }else {
             holder.category.setImageResource(R.drawable.red_dot);
         }
+        switch (account.getType()){
+            case "交通":
+                holder.icon.setImageResource(R.drawable.traffic_actived);
+                break;
+            case "餐饮":
+                holder.icon.setImageResource(R.drawable.eat_actived);
+                break;
+            case "衣服":
+                holder.icon.setImageResource(R.drawable.clothes_actived);
+                break;
+            case "购物":
+                holder.icon.setImageResource(R.drawable.shopping_actived);
+                break;
+            case "工资":
+                holder.icon.setImageResource(R.drawable.salary_actived);
+                break;
+            default:
+                holder.icon.setImageResource(R.drawable.other_actived);
+        }
     }
 
     @Override
@@ -54,6 +73,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView date;
         TextView sum;
         ImageView category;
+        ImageView icon;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,6 +81,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             date = itemView.findViewById(R.id.date);
             sum = itemView.findViewById(R.id.sum);
             category = itemView.findViewById(R.id.insDot);
+            icon = itemView.findViewById(R.id.icon);
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
