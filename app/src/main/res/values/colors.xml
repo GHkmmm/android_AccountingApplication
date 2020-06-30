@@ -11,4 +11,6 @@
     <color name="textBlack">#000</color>
     <color name="textLightBlack">#999</color>
     <color name="redColor">#dc4245</color>
+    <color name="orange">#FF9800</color>
+    <color name="blue">#FF6FA9E1</color>
 </resources>

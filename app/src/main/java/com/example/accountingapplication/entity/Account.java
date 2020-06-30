@@ -12,6 +12,7 @@ public class Account implements Serializable, Comparable<Account> {
     private String type;
     private String category;
 
+
     public int getId() {
         return id;
     }

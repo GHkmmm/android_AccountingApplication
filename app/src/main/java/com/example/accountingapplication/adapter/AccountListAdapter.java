@@ -52,11 +52,23 @@ public class AccountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case "衣服":
                 holder.icon.setImageResource(R.drawable.clothes_actived);
                 break;
+            case "房子":
+                holder.icon.setImageResource(R.drawable.house_actived);
+                break;
             case "购物":
                 holder.icon.setImageResource(R.drawable.shopping_actived);
                 break;
-            case "工资":
-                holder.icon.setImageResource(R.drawable.salary_actived);
+            case "还款":
+                holder.icon.setImageResource(R.drawable.repayment_actived);
+                break;
+            case "借钱":
+                holder.icon.setImageResource(R.drawable.rent_actived);
+                break;
+            case "话费":
+                holder.icon.setImageResource(R.drawable.phonebill_actived);
+                break;
+            case "电费":
+                holder.icon.setImageResource(R.drawable.electricbill_actived);
                 break;
             default:
                 holder.icon.setImageResource(R.drawable.other_actived);

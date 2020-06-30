@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.accountingapplication.R;
 import com.example.accountingapplication.activity.AccountDetailActivity;
+import com.example.accountingapplication.activity.MainActivity;
 import com.example.accountingapplication.adapter.AccountListAdapter;
 import com.example.accountingapplication.database.MyDBOperation;
 import com.example.accountingapplication.entity.Account;
@@ -143,6 +144,8 @@ public class AccountListFragment extends Fragment {
     public void deleteAccount(Account account, int position){
         dbOperation.deleteAccount(account);
         accounts.remove(position);
+        ((MainActivity)getActivity()).accountList = accounts;
+        ((MainActivity)getActivity()).setTotalSum();
         accountListAdapter.notifyItemRemoved(position);
         Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
     }

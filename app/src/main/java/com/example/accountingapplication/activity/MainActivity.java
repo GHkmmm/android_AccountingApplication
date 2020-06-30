@@ -42,18 +42,24 @@ import com.example.accountingapplication.utils.MyApplication;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ViewPager homeViewPager;
     private ImageView menu,accountImg, staticsImg, addAccount;
-    private TextView totalSum;
+    private TextView month,totalSum, totalIncome, totalExpenses;
     private LinearLayout totalLinearLayout, pagerTop;
     private DrawerLayout dlNav;
     private NavigationView navView;
     private Switch isLockedSwitch;
+
+    int income = 0;
+    int expenses = 0;
+    int sum = 0;
 
     private AccountListFragment accountListFragment;
     private StaticsFragment staticsFragment;
@@ -102,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                     udb.updateUser(user);
                 }else {
                     user.setIsLocked(0);
-                    System.out.println("updateUser======="+user.getId());
                     udb.updateUser(user);
                 }
             }
@@ -131,9 +136,15 @@ public class MainActivity extends AppCompatActivity {
         dlNav = findViewById(R.id.dlNav);
         navView = findViewById(R.id.navView);
         isLockedSwitch = navView.getHeaderView(0).findViewById(R.id.isLocked);
+        month = findViewById(R.id.month);
+        totalIncome = findViewById(R.id.total_income);
+        totalExpenses = findViewById(R.id.total_expenses);
     }
 
     public void initData(){
+        Calendar cal = Calendar.getInstance();
+        int monthVal = cal.get(Calendar.MONTH )+1;
+        month.setText(monthVal+"月");
         MySQLiteOpenHelp.mySQLiteOpenHelp = new MySQLiteOpenHelp(MainActivity.this);
         UserDB.mySQLiteOpenHelp = new UserDB(MainActivity.this);
         accountList = new ArrayList<>();
@@ -154,21 +165,30 @@ public class MainActivity extends AppCompatActivity {
         setTotalSum();
     }
 
-    public int calcTotalSum(){
-        int sum = 0;
+    public void calcTotalSum(){
+        sum = 0;
+        income = 0;
+        expenses = 0;
         String category = "收入";
         for (int i=0;i<accountList.size();i++){
+            System.out.println(i+"sum======"+accountList.get(i).getSum());
+            System.out.println(i+"cate======"+accountList.get(i).getCategory());
             if(category.equals(accountList.get(i).getCategory())){
                 sum = Integer.parseInt(accountList.get(i).getSum())+sum;
+                income = income + Integer.parseInt(accountList.get(i).getSum());
             }else {
                 sum = sum-Integer.parseInt(accountList.get(i).getSum());
+                expenses = expenses + Integer.parseInt(accountList.get(i).getSum());
             }
         }
-        return sum;
     }
     public void setTotalSum(){
-        totalSum.setText(calcTotalSum()+"");
-        if (calcTotalSum()>0){
+        System.out.println("setTotalSum");
+        calcTotalSum();
+        totalSum.setText(sum+"");
+        totalIncome.setText("收入："+income+"¥");
+        totalExpenses.setText("支出："+expenses+"¥");
+        if (sum>0){
             totalLinearLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             pagerTop.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         }else {
@@ -222,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Account account = new Account();
-        System.out.println("requestCode===="+requestCode);
         if (requestCode==1 && data!=null){
             account = (Account) data.getExtras().getSerializable("account");
             account.setId(accountList.get(0).getId()+1);
@@ -233,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         }else if (data!=null){
             account = (Account) data.getExtras().getSerializable("account");
             int i = data.getExtras().getInt("position");
+            System.out.println("i========"+i);
             dbOperation.updateAccount(account);
             accountList.get(i).setInfo(account.getInfo());
             accountList.get(i).setType(account.getType());

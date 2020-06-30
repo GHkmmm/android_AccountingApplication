@@ -56,6 +56,7 @@ public class MyDBOperation {
         contentValues.put("date", account.getDate());
         contentValues.put("type",account.getType());
         contentValues.put("info",account.getInfo());
+        contentValues.put("category",account.getCategory());
 
         db.update("accountList", contentValues, "id=?", new String[]{account.getId()+""});
     }

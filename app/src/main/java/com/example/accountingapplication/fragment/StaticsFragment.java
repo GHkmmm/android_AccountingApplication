@@ -40,7 +40,7 @@ public class StaticsFragment extends Fragment {
     private PieChart pieChart;
     private List<Account> accounts;
     private TextView Today, LastWeek, LastMonth;
-    private int trafficVal, eatVal, clothesVal, shoppingVal,otherVal;
+    private int trafficVal, eatVal, clothesVal, houseVal, shoppingVal, repaymentVal, rentVal, phonebillVal, electricbillVal, otherVal;
     private double range;
     private double curTime;
 
@@ -112,6 +112,12 @@ public class StaticsFragment extends Fragment {
         eatVal = 0;
         clothesVal = 0;
         shoppingVal = 0;
+        houseVal = 0;
+        shoppingVal = 0;
+        repaymentVal = 0;
+        rentVal = 0;
+        phonebillVal = 0;
+        electricbillVal = 0;
         otherVal = 0;
         for (int i=0;i<accounts.size();i++){
             if("收入".equals(accounts.get(i).getCategory())){
@@ -131,6 +137,21 @@ public class StaticsFragment extends Fragment {
                             break;
                         case "购物":
                             shoppingVal = shoppingVal+Integer.parseInt(accounts.get(i).getSum());
+                            break;
+                        case "房子":
+                            houseVal = houseVal+Integer.parseInt(accounts.get(i).getSum());
+                            break;
+                        case "还款":
+                            repaymentVal = repaymentVal+Integer.parseInt(accounts.get(i).getSum());
+                            break;
+                        case "借钱":
+                            rentVal = rentVal+Integer.parseInt(accounts.get(i).getSum());
+                            break;
+                        case "话费":
+                            phonebillVal = phonebillVal+Integer.parseInt(accounts.get(i).getSum());
+                            break;
+                        case "电费":
+                            electricbillVal = electricbillVal+Integer.parseInt(accounts.get(i).getSum());
                             break;
                         default:
                             otherVal = otherVal+Integer.parseInt(accounts.get(i).getSum());

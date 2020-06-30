@@ -1,6 +1,7 @@
 package com.example.accountingapplication.fragment;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -13,31 +14,41 @@ import androidx.fragment.app.Fragment;
 
 import com.example.accountingapplication.R;
 import com.example.accountingapplication.entity.Account;
+import com.example.accountingapplication.utils.DateUtil;
+import com.example.accountingapplication.utils.LineChartMarkView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class StaticsLineChartFragment extends Fragment {
-    private LineChart lineChart;
-    private LineDataSet dataSet;
-    private List<Entry> entries;
     private List<Account> accountList;
     private List<Account> expensesAccounts;
     private List<Account> incomeAccounts;
+    private List<Account> expensesAccountsByDate;
+    private List<Account> incomeAccountsByDate;
+    private LineChart lineChart;
+    private XAxis xAxis;                //X轴
+    private YAxis leftYAxis;            //左侧Y轴
+    private YAxis rightYaxis;           //右侧Y轴
+    private Legend legend;              //图例
+    private LimitLine limitLine;
     private double range;
     private double curTime;
 
@@ -50,37 +61,29 @@ public class StaticsLineChartFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.statics_linechart, container, false);
-        initView(view);
-        initData();
-        showChart();
+        lineChart = view.findViewById(R.id.lineChart);
+        initChart(lineChart);
+//        LineChartBean lineChartBean = LocalJsonAnalyzeUtil.JsonToObject(this,
+//                "chart.json", LineChartBean.class);
+//        List<IncomeBean> list = lineChartBean.getGRID0().getResult().getClientAccumulativeRate();
+        dividedAccount();
+        showLineChart(expensesAccountsByDate, "收入", getResources().getColor(R.color.blue));
+        addLine(incomeAccountsByDate, "支出", getResources().getColor(R.color.orange));
+        Drawable drawable = getResources().getDrawable(R.drawable.fade_blue);
+        setChartFillDrawable(drawable);
+        setMarkerView();
         return view;
     }
 
-    public void initView(View view){
-        lineChart = view.findViewById(R.id.lineChart);
-    }
-
-    public void initData() {
-        entries = new ArrayList<>();
+    private void dividedAccount(){
         incomeAccounts = new ArrayList<>();
         expensesAccounts = new ArrayList<>();
+        expensesAccountsByDate = new ArrayList<>();
+        incomeAccountsByDate = new ArrayList<>();
         curTime = Calendar.getInstance().getTimeInMillis();
+        String todayDate = new SimpleDateFormat("yyyy-MM-dd").toString();
         range = curTime-(86400000d*7d);
-        int total7 = 0;
-        int total6 = 0;
-        int total5 = 0;
-        int total4 = 0;
-        int total3 = 0;
-        int total2 = 0;
-        int total1 = 0;
-        Entry entry7 = new Entry(7,0);
-        Entry entry6 = new Entry(6,0);
-        Entry entry5 = new Entry(5,0);
-        Entry entry4 = new Entry(4,0);
-        Entry entry3 = new Entry(3,0);
-        Entry entry2 = new Entry(2,0);
-        Entry entry1 = new Entry(1,0);
-        entries.clear();
+
         for (int i=0;i<accountList.size();i++){
             if ("收入".equals(accountList.get(i).getCategory())){
                 incomeAccounts.add(accountList.get(i));
@@ -88,137 +91,184 @@ public class StaticsLineChartFragment extends Fragment {
                 expensesAccounts.add(accountList.get(i));
             }
         }
-        for (int i = 0; i < expensesAccounts.size(); i++) {
-            double time = new SimpleDateFormat("yyyy-MM-dd").parse(expensesAccounts.get(i).getDate(), new ParsePosition(0)).getTime();
-            if (time > range) {
-                if(time > curTime - 86400000d){
-                    total7 = total7 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry7 = new Entry(7, total7);
-                } else if (time > curTime - 86400000d*2d){
-                    total6 = total6 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry6 = new Entry(6, total6);
-                }else if (time > curTime - 86400000d*3d){
-                    total5 = total5 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry5 = new Entry(5, total5);
-                } else if (time > curTime - 86400000d*4d){
-                    total4 = total4 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry4 = new Entry(4, total4);
-                } else if (time > curTime - 86400000d*5d){
-                    total3 = total3 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry3 = new Entry(3, total3);
-                } else if (time > curTime - 86400000d*6d){
-                    total2 = total2 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry2 = new Entry(2, total2);
-                }else if (time > curTime - 86400000d*7d){
-                    total1 = total1 + Integer.parseInt(expensesAccounts.get(i).getSum());
-                    entry1 = new Entry(1, total1);
+        for (double c=curTime-86400000d;c>=range;c=c-86400000d){
+            Account account = new Account();
+            int total = 0;
+            Boolean isFind = false;
+            for (int a=0;a<expensesAccounts.size();a++) {
+                double time = new SimpleDateFormat("yyyy-MM-dd").parse(expensesAccounts.get(a).getDate(), new ParsePosition(0)).getTime();
+                if (time>c && time<c+86400000d){
+                    isFind = true;
+                    total = total + Integer.parseInt(expensesAccounts.get(a).getSum());
+                    account.setSum(total+"");
+                } else if (!isFind){
+                    account.setSum("0");
                 }
-
-//                System.out.println(i + "size======" + expensesAccounts.size());
-//                total = total + Integer.parseInt(expensesAccounts.get(i - 1).getSum());
-//                if ((expensesAccounts.get(i).getDate()).equals(expensesAccounts.get(i - 1).getDate())) {
-////                    total = total + Integer.parseInt(expensesAccounts.get(i).getSum());
-//                } else {
-//                    System.out.println("total======" + total);
-//                    entries.add(new Entry(i, total));
-//                    total = 0;
-//                }
+                account.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date((long) c)));
             }
+            expensesAccountsByDate.add(0,account);
         }
-        entries.add(entry1);
-        entries.add(entry2);
-        entries.add(entry3);
-        entries.add(entry4);
-        entries.add(entry5);
-        entries.add(entry6);
-        entries.add(entry7);
+        for (double c=curTime-86400000d;c>=range;c=c-86400000d){
+            Account account = new Account();
+            int total = 0;
+            Boolean isFind = false;
+            for (int a=0;a<incomeAccounts.size();a++) {
+                double time = new SimpleDateFormat("yyyy-MM-dd").parse(incomeAccounts.get(a).getDate(), new ParsePosition(0)).getTime();
+                if (time>c && time<c+86400000d){
+                    isFind = true;
+                    total = total + Integer.parseInt(incomeAccounts.get(a).getSum());
+                    account.setSum(total+"");
+                } else if (!isFind){
+                    account.setSum("0");
+                }
+                account.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date((long) c)));
+            }
+            incomeAccountsByDate.add(0,account);
+        }
     }
 
-    public void showChart() {
+    /**
+     * 初始化图表
+     */
+    private void initChart(LineChart lineChart) {
+        /***图表设置***/
+        //是否展示网格线
+        lineChart.setDrawGridBackground(false);
+        //是否显示边界
         lineChart.setDrawBorders(false);
-        LineDataSet lineDataSet = new LineDataSet(entries, "");
-        LineData lineData = new LineData(lineDataSet);
-        //线颜色
-        lineDataSet.setColor(Color.parseColor("#F15A4A"));
-        //线宽度
-        lineDataSet.setLineWidth(1.6f);
-        //不显示圆点
-        lineDataSet.setDrawCircles(false);
-        //线条平滑
-        lineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
-        //设置折线图填充
-//        lineDataSet.setDrawFilled(true);
-        LineData data = new LineData(lineDataSet);
-        //无数据时显示的文字
-        lineChart.setNoDataText("暂无数据");
-        //折线图不显示数值
-        data.setDrawValues(false);
-        //得到X轴
-        XAxis xAxis = lineChart.getXAxis();
-        //设置X轴的位置（默认在上方)
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //设置X轴坐标之间的最小间隔
-        xAxis.setGranularity(1f);
-        //设置X轴的刻度数量，第二个参数为true,将会画出明确数量（带有小数点），但是可能值导致不均匀，默认（6，false）
-        xAxis.setLabelCount(7, false);
-        //设置X轴的值（最小值、最大值、然后会根据设置的刻度数量自动分配刻度显示）
-        xAxis.setAxisMinimum(0f);
-        xAxis.setAxisMaximum((float) 7);
-        //不显示网格线
-        xAxis.setDrawGridLines(false);
-        // 标签倾斜
-        xAxis.setLabelRotationAngle(45);
-        //设置X轴值为字符串
-//        xAxis.setValueFormatter(new IAxisValueFormatter()
-//        {
-//            @Override
-//            public String getFormattedValue(float value, AxisBase axis)
-//            {
-//                int IValue = (int) value;
-//                CharSequence format = DateFormat.format("MM/dd",
-//                        System.currentTimeMillis()-(long)(list.size()-IValue)*24*60*60*1000);
-//                return format.toString();
-//            }
-//        });
-        //得到Y轴
-        YAxis yAxis = lineChart.getAxisLeft();
-        YAxis rightYAxis = lineChart.getAxisRight();
-        //设置Y轴是否显示
-        rightYAxis.setEnabled(false); //右侧Y轴不显示
-        //设置y轴坐标之间的最小间隔
-        //不显示网格线
-        yAxis.setDrawGridLines(false);
-        //设置Y轴坐标之间的最小间隔
-        yAxis.setGranularity(1);
-        //设置y轴的刻度数量
-        //+2：最大值n就有n+1个刻度，在加上y轴多一个单位长度，为了好看，so+2
-//        yAxis.setLabelCount(Collections.max(list) + 2, false);
-        yAxis.setLabelCount(500, false);
-        //设置从Y轴值
-        yAxis.setAxisMinimum(0f);
-        //+1:y轴多一个单位长度，为了好看
-//        yAxis.setAxisMaximum(Collections.max(list) + 1);
+        //是否可以拖动
+        lineChart.setDragEnabled(false);
+        //是否有触摸事件
+        lineChart.setTouchEnabled(true);
+        //设置XY轴动画效果
+        lineChart.animateY(1000);
+        lineChart.animateX(600);
+        lineChart.setBackgroundColor(Color.WHITE);
 
-        //y轴
-//        yAxis.setValueFormatter(new IAxisValueFormatter()
-//        {
-//            @Override
-//            public String getFormattedValue(float value, AxisBase axis)
-//            {
-//                int IValue = (int) value;
-//                return String.valueOf(IValue);
-//            }
-//        });
-        //图例：得到Lengend
-        Legend legend = lineChart.getLegend();
-        //隐藏Lengend
-        legend.setEnabled(false);
-        //隐藏描述
-        Description description = new Description();
-        description.setEnabled(false);
-        lineChart.setDescription(description);
+        /***XY轴的设置***/
+        xAxis = lineChart.getXAxis();
+        leftYAxis = lineChart.getAxisLeft();
+        rightYaxis = lineChart.getAxisRight();
+        //X轴设置显示位置在底部
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setGranularity(1f);
+        //保证Y轴从0开始，不然会上移一点
+        leftYAxis.setAxisMinimum(0f);
+        rightYaxis.setAxisMinimum(0f);
+        //显示了网格线，而且不是我们想要的 虚线 。其实那是 X Y轴自己的网格线，禁掉即可
+        xAxis.setDrawGridLines(false);
+        rightYaxis.setDrawGridLines(false);
+        leftYAxis.setDrawGridLines(true);
+        //设置X Y轴网格线为虚线（实体线长度、间隔距离、偏移量：通常使用 0）
+        leftYAxis.enableGridDashedLine(10f, 10f, 0f);
+
+        /***折线图例 标签 设置***/
+        legend = lineChart.getLegend();
+        //设置显示类型，LINE CIRCLE SQUARE EMPTY 等等 多种方式，查看LegendForm 即可
+        legend.setForm(Legend.LegendForm.LINE);
+        legend.setTextSize(12f);
+        //显示位置 左下方
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        //是否绘制在图表里面
+        legend.setDrawInside(false);
+    }
+
+    /**
+     * 曲线初始化设置 一个LineDataSet 代表一条曲线
+     *
+     * @param lineDataSet 线条
+     * @param color       线条颜色
+     * @param mode
+     */
+    private void initLineDataSet(LineDataSet lineDataSet, int color, LineDataSet.Mode mode) {
+        lineDataSet.setColor(color);
+        lineDataSet.setCircleColor(color);
+        lineDataSet.setLineWidth(1f);
+        lineDataSet.setCircleRadius(3f);
+        //设置曲线值的圆点是实心还是空心
+        lineDataSet.setDrawCircleHole(false);
+        lineDataSet.setValueTextSize(10f);
+        //设置折线图填充
+        lineDataSet.setDrawFilled(true);
+        lineDataSet.setFormLineWidth(1f);
+        lineDataSet.setFormSize(15.f);
+        lineDataSet.setDrawCircles(false);
+        if (mode == null) {
+            //设置曲线展示为圆滑曲线（如果不设置则默认折线）
+            lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        } else {
+            lineDataSet.setMode(mode);
+        }
+    }
+
+    /**
+     * 展示曲线
+     *
+     * @param dataList 数据集合
+     * @param name     曲线名称
+     * @param color    曲线颜色
+     */
+    public void showLineChart(final List<Account> dataList, String name, int color) {
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < dataList.size(); i++) {
+            Account data = dataList.get(i);
+            /**
+             * 在此可查看 Entry构造方法，可发现 可传入数值 Entry(float x, float y)
+             * 也可传入Drawable， Entry(float x, float y, Drawable icon) 可在XY轴交点 设置Drawable图像展示
+             */
+            Entry entry = new Entry(i, Float.parseFloat(data.getSum()));
+            entries.add(entry);
+        }
+        xAxis.setGranularity(1);
+        // 每一个LineDataSet代表一条线
+        LineDataSet lineDataSet = new LineDataSet(entries, name);
+        initLineDataSet(lineDataSet, color, LineDataSet.Mode.LINEAR);
+        LineData lineData = new LineData(lineDataSet);
         lineChart.setData(lineData);
+    }
+
+    /**
+     * 设置线条填充背景颜色
+     *
+     * @param drawable
+     */
+    public void setChartFillDrawable(Drawable drawable) {
+        if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
+            LineDataSet lineDataSet = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
+            LineDataSet lineDataSet2 = (LineDataSet) lineChart.getData().getDataSetByIndex(1);
+            //避免在 initLineDataSet()方法中 设置了 lineDataSet.setDrawFilled(false); 而无法实现效果
+            lineDataSet.setDrawFilled(true);
+            lineDataSet.setFillDrawable(drawable);
+            lineDataSet2.setDrawFilled(true);
+            lineDataSet2.setFillDrawable(drawable);
+            lineChart.invalidate();
+        }
+    }
+
+    /**
+     * 设置 可以显示X Y 轴自定义值的 MarkerView
+     */
+    public void setMarkerView() {
+        LineChartMarkView mv = new LineChartMarkView(getContext(), xAxis.getValueFormatter());
+        mv.setChartView(lineChart);
+        lineChart.setMarker(mv);
         lineChart.invalidate();
     }
 
+    private void addLine(List<Account> dataList, String name, int color) {
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < dataList.size(); i++) {
+            Account data = dataList.get(i);
+            Entry entry = new Entry(i, Float.parseFloat(data.getSum()));
+            entries.add(entry);
+        }
+        // 每一个LineDataSet代表一条线
+        LineDataSet lineDataSet = new LineDataSet(entries, name);
+        initLineDataSet(lineDataSet, color, LineDataSet.Mode.LINEAR);
+        lineChart.getLineData().addDataSet(lineDataSet);
+        lineChart.invalidate();
+    }
 }
