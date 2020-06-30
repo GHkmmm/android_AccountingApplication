@@ -29,11 +29,20 @@
 
         </LinearLayout>
 
-        <Switch
-            android:id="@+id/timeSwitch"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="按时间顺序排序"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <Switch
+                android:id="@+id/timeSwitch"
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:text="按时间顺序排序"/>
+            <Spinner
+                android:id="@+id/categorySpinner"
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:entries="@array/category"/>
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/accountList"

@@ -59,4 +59,36 @@ public class MyDBOperation {
 
         db.update("accountList", contentValues, "id=?", new String[]{account.getId()+""});
     }
+
+    public List<Account> readExpensesAccount(){
+        List<Account> accounts = new ArrayList<>();
+        Cursor cursor = db.query("accountList",null,"state=? and category=?",new String[]{"1","支出"},null,null,null);
+        while (cursor.moveToNext()){
+            Account dbAccount = new Account();
+            dbAccount.setSum(cursor.getString(cursor.getColumnIndex("sum")));
+            dbAccount.setDate(cursor.getString(cursor.getColumnIndex("date")));
+            dbAccount.setType(cursor.getString(cursor.getColumnIndex("type")));
+            dbAccount.setInfo(cursor.getString(cursor.getColumnIndex("info")));
+            dbAccount.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            dbAccount.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+            accounts.add(0, dbAccount);
+        }
+        return accounts;
+    }
+
+    public List<Account> readIncomeAccount(){
+        List<Account> accounts = new ArrayList<>();
+        Cursor cursor = db.query("accountList",null,"state=? and category=?",new String[]{"1","收入"},null,null,null);
+        while (cursor.moveToNext()){
+            Account dbAccount = new Account();
+            dbAccount.setSum(cursor.getString(cursor.getColumnIndex("sum")));
+            dbAccount.setDate(cursor.getString(cursor.getColumnIndex("date")));
+            dbAccount.setType(cursor.getString(cursor.getColumnIndex("type")));
+            dbAccount.setInfo(cursor.getString(cursor.getColumnIndex("info")));
+            dbAccount.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            dbAccount.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+            accounts.add(0, dbAccount);
+        }
+        return accounts;
+    }
 }

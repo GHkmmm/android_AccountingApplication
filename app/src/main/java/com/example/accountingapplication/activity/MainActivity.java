@@ -37,6 +37,7 @@ import com.example.accountingapplication.entity.Account;
 import com.example.accountingapplication.entity.User;
 import com.example.accountingapplication.fragment.AccountListFragment;
 import com.example.accountingapplication.fragment.StaticsFragment;
+import com.example.accountingapplication.fragment.StaticsLineChartFragment;
 import com.example.accountingapplication.utils.MyApplication;
 import com.google.android.material.navigation.NavigationView;
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AccountListFragment accountListFragment;
     private StaticsFragment staticsFragment;
+    private StaticsLineChartFragment staticsLineChartFragment;
     private List<Fragment> fragmentList;
     private HomeViewPagerAdapter homeViewPagerAdapter;
 
@@ -178,10 +180,12 @@ public class MainActivity extends AppCompatActivity {
     public void setHomeViewPagerAdapter(){
         accountListFragment = new AccountListFragment(accountList);
         staticsFragment = new StaticsFragment(accountList);
+        staticsLineChartFragment = new StaticsLineChartFragment(accountList);
 
         fragmentList = new ArrayList<>();
         fragmentList.add(accountListFragment);
         fragmentList.add(staticsFragment);
+        fragmentList.add(staticsLineChartFragment);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         homeViewPagerAdapter = new HomeViewPagerAdapter(fragmentManager, fragmentList);

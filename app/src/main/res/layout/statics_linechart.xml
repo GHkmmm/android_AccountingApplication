@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="数据统计"
+        android:text="支出走向"
         android:paddingTop="40dp"
         android:textSize="30dp"/>
 
@@ -21,32 +21,14 @@
         android:layout_marginTop="10dp">
 
         <TextView
-            android:id="@+id/today"
-            android:layout_width="0dp"
+            android:id="@+id/lineChartLastWeek"
+            android:layout_width="150dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:layout_weight="1"
-            android:text="今天"
-            android:layout_margin="10dp"/>
-
-        <TextView
-            android:id="@+id/lastweek"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="1"
             android:text="过去七天"
             android:background="#eee"
             android:layout_margin="10dp"/>
 
-        <TextView
-            android:id="@+id/lastmonth"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:text="过去一个月"
-            android:layout_margin="10dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -55,8 +37,8 @@
         android:orientation="vertical"
         android:layout_marginTop="10dp">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/chart"
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart"
             android:layout_width="match_parent"
             android:layout_height="300dp"/>
 

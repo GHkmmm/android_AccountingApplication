@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ public class AccountListFragment extends Fragment {
     private AccountListAdapter accountListAdapter;
     private MyDBOperation dbOperation;
     private Switch timeSwitch;
+    private Spinner categorySpinner;
 
     public AccountListFragment(List<Account> accounts) {
         this.accounts = accounts;
@@ -46,8 +49,36 @@ public class AccountListFragment extends Fragment {
         View view = inflater.inflate(R.layout.account, container, false);
         accountList = view.findViewById(R.id.accountList);
         timeSwitch = view.findViewById(R.id.timeSwitch);
+        categorySpinner = view.findViewById(R.id.categorySpinner);
         initData();
         initRv();
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        accounts = dbOperation.readAccount();
+                        System.out.println(accounts.size());
+                        initRv();
+                        break;
+                    case 1:
+                        accounts = dbOperation.readExpensesAccount();
+                        System.out.println(accounts.size());
+                        initRv();
+                        break;
+                    case 2:
+                        accounts = dbOperation.readIncomeAccount();
+                        System.out.println(accounts.size());
+                        initRv();
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         return view;
     }
     private void initData(){

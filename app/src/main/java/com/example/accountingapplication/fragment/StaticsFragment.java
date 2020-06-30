@@ -45,7 +45,6 @@ public class StaticsFragment extends Fragment {
     private double curTime;
 
     public StaticsFragment(List<Account> accounts) {
-        Collections.sort(accounts);
         this.accounts = accounts;
     }
 
@@ -154,6 +153,7 @@ public class StaticsFragment extends Fragment {
     }
 
     public void initPieChart(){
+        pieChart.setNoDataText("暂无数据");
         pieChart.setUsePercentValues(true); //设置是否显示数据实体(百分比，true:以下属性才有意义)
         pieChart.getDescription().setEnabled(false);//设置pieChart图表的描述
         pieChart.setExtraOffsets(5, 5, 5, 5);//饼形图上下左右边距
